@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.0.5/material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+
+
+        .modal {
+            will-change: visibility, opacity;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            -webkit-transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .modal-radius .modal__content {
+            border-radius: 2px;
+        }
+
+        .modal.is-visble {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal__dialog {
+            position: relative;
+        }
+
+        .modal__title {
+            height: 48px;
+            font-size: 18px;
+            margin: 0;
+            padding: 0;
+            line-height: 48px;
+            overflow: hidden;
+        }
+
+        .modal__content {
+            will-change: transform;
+            position: relative;
+            padding: 2.4rem;
+            background-clip: padding-box;
+            opacity: 0;
+            -webkit-transition: all .5s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all .5s cubic-bezier(0.23, 1, 0.32, 1);
+            -webkit-transform: scale(0.1, 0.1);
+            transform: scale(0.1, 0.1);
+
+        }
+
+        .modal__close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 1000;
+            opacity: 0;
+            -webkit-transition: all .25s ease;
+            transition: all .25s ease;
+            -webkit-transition-delay: .5s;
+            transition-delay: .5s;
+        }
+
+        .modal__close:hover {
+            background-color: rgba(158, 158, 158, 0.20);
+        }
+    </style>
+
+</head>
+<body class="mdl-color--grey-300">
+<div class="mdl-js-layout mdl__layout">
+    <main class="mdl-layout__content" style="width: 100%">
+        <section class="mdl-grid">
+            <div class="mdl-cell mdl-cell--2-col"></div>
+            <div class="mdl-cell mdl-cell--8-col">
+                <h1>Material Design Modal</h1>
+                <button id="modal1"
+                        class="mdl-js-button mdl-button mdl-color--accent mdl-js-ripple-effect mdl-shadow--3dp mdl-color-text--grey-100">
+                    Modal
+                </button>
+            </div>
+
+        </section>
+    </main>
+
+</div>
+<div class="js-modal modal__container modal-radius is-center" role="dialog" aria-hidden="true">
+    <div class="modal__dialog">
+        <button class="modal__close mdl-js-button mdl-button mdl-js-ripple-effect mdl-button--icon mdl-color-text--grey-600">
+            <i class="material-icons">clear</i>
+        </button>
+
+        <div class="modal__content mdl-color--white mdl-shadow--3dp">
+            <h5 class="modal__title">Material 主题对话框</h5>
+            <p>This is a simple Material Design Modal.</p>
+
+            <p>这是一个简单的Material主题Modal控件.</p>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.0.5/material.min.js"></script>
+<script>
+
+    /*
+     * Initialize
+     * */
+    var MaterialModal = function MaterialModal(element) {
+        this.element_ = element;
+        this.init();
+
+
+    }
+
+    window['MaterialModal'] = MaterialModal;
+    /*
+     * ClassName
+     * */
+    MaterialModal.prototype.CssClasses_ = {
+        CONTAINER: 'modal__container',
+        MODAL: 'modal',
+        IS_VISBLE: 'is-visble',
+        CLOSE: "modal__close",
+        IS_CENTER: 'is-center',
+        DIALOG: 'modal__dialog',
+        CONTENT: 'modal__content'
+
+    }
+
+    // center the modal on the view
+    MaterialModal.prototype.center = function () {
+
+        var dlg = this.element_.querySelector('.' + this.CssClasses_.DIALOG);
+        var height = dlg.getBoundingClientRect().height;
+        var width = dlg.getBoundingClientRect().width;
+        var offsetTop = (window.innerHeight - height) / 2 + document.body.scrollTop;
+        var offsetLeft = (window.innerWidth - width) / 2 + document.body.scrollLeft;
+        dlg.style.left = offsetLeft + 'px';
+        dlg.style.top = offsetTop + 'px';
+
+    }
+
+    //execute initialize
+    MaterialModal.prototype.init = function () {
+        if (!this.element_)return;
+        this.element_.classList.add(this.CssClasses_.MODAL);
+        this.close_ = this.element_.querySelector('.' + this.CssClasses_.CLOSE)
+        this.content_ = this.element_.querySelector('.' + this.CssClasses_.CONTENT);
+
+        //bind 'this' to event context
+        var closeHandler = this.hide.bind(this);
+        //when click close button,then execute the click() function
+        this.close_.addEventListener('click', closeHandler);
+    }
+
+
+    //show the modal,by add the 'is-visible' class name
+    MaterialModal.prototype.show = function () {
+        this.element_.classList.add(this.CssClasses_.IS_VISBLE);
+        window.requestAnimationFrame(function () {
+            this.content_.style.transform = ' scale(1, 1)';
+            this.content_.style.opacity = '1';
+            this.close_.style.opacity = '1';
+        }.bind(this));
+    }
+
+    //If the browser dont support the 'flex box'
+    //then,maybe could show the modal with this method
+    MaterialModal.prototype.showCenter = function () {
+        //if the "modal" element has the 'is-center' class
+        // then center the visible box on the visible view
+        if (this.element_.classList.contains(this.CssClasses_.IS_CENTER)) {
+            this.center();
+        }
+    }
+    //hide the modal,by remove class name
+    MaterialModal.prototype.hide = function () {
+
+        //reset style for animation
+        this.content_.style.transform = '';
+        this.content_.style.opacity = '0';
+        this.close_.style.opacity = '0';
+        this.element_.classList.remove(this.CssClasses_.IS_VISBLE);
+    }
+
+    // register the component
+    componentHandler.register({
+        constructor: MaterialModal,
+        classAsString: 'MaterialModal',
+        cssClass: 'js-modal'
+    });
+
+</script>
+<script>
+
+    var modal = document.querySelector('.js-modal')
+    var modal1 = document.getElementById('modal1');
+    modal1.onclick = function () {
+        modal['MaterialModal'] && modal['MaterialModal'].show()
+    }
+</script>
+</body>
+</html>
